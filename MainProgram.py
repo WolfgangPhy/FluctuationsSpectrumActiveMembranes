@@ -2,6 +2,7 @@ import json
 import numpy as np
 from Spectrums import SpatialSpectrums
 from Spectrums import FrequencySpectrums
+from Visualizer import Visualizer
 import scipy.constants as const
 import pandas as pd
 
@@ -92,6 +93,10 @@ class MainProgram:
         self.compute_true_frequency_spectrum()
         self.compute_inverse_fourier_transform()
         self.save_results()
+        
+        visualizer = Visualizer(self.spectrum_filename)
+        visualizer.compare_spectrums()
+        
         
 if __name__ == "__main__":
     main = MainProgram()
