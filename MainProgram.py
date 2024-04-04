@@ -27,6 +27,7 @@ class MainProgram:
         self.frequency_spectrum = None
         self.space_spectrum = None
         self.spectrum_filename = None
+        self.resolution = None
         self.get_parameters_from_json()
         self.set_parameters()
         self.get_files_path()
@@ -53,6 +54,7 @@ class MainProgram:
         self.area = self.parameters["area"]
         self.curvature_frequency = self.parameters["curvature_frequency"]
         self.capillary_frequency = self.parameters["capillary_frequency"]
+        self.resolution = self.parameters["resolution"]
         self.check_and_assign_spectrum_function(self.parameters["spectrum_function"])
 
     def check_and_assign_spectrum_function(self, spectrum_function):
@@ -63,9 +65,9 @@ class MainProgram:
             raise ValueError("The spectrum function provided in the parameters is not valid.")
 
     def init_arrays(self):
-        self.wave_vector_array = np.linspace(self.min_frequency, self.max_frequency, 1000)
-        self.space_array = np.linspace(0.03, 300, 1000)
-        self.true_space_spectrum = np.zeros(1000)
+        self.wave_vector_array = np.linspace(self.min_frequency, self.max_frequency, self.resolution)
+        self.space_array = np.linspace(0.03, 300, self.resolution)
+        self.true_space_spectrum = np.zeros(self.resolution)
 
     def compute_true_space_spectrum(self):
         self.true_space_spectrum = SpatialSpectrums.base_spectrum(self.space_array, self.temperature,

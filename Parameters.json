@@ -7,5 +7,6 @@
     "area" : 10e-6,
     "curvature_frequency" : 4e9,
     "capillary_frequency" : 400,
-    "spectrum_function" : "base_spectrum"
+    "spectrum_function" : "base_spectrum",
+    "resolution" : 1000
 }
