@@ -1,0 +1,11 @@
+{
+    "temperature" : 300,
+    "volumic_mass" : 1000,
+    "surface_tension" : 0.0728,
+    "min_frequency" : 1e6,
+    "max_frequency" : 1e10,
+    "area" : 10e-6,
+    "curvature_frequency" : 4e9,
+    "capillary_frequency" : 400,
+    "spectrum_function" : "base_spectrum"
+}
