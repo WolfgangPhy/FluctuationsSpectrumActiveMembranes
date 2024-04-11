@@ -7,7 +7,6 @@ import scipy.constants as const
 import pandas as pd
 
 
-
 class MainProgram:
 
     def __init__(self):
@@ -36,7 +35,6 @@ class MainProgram:
     def get_files_path(self):
         with open("Config.json") as file:
             self.spectrum_filename = json.load(file)["spectrum_filename"]
-            
 
     def get_parameters_from_json(self):
         """
@@ -48,12 +46,14 @@ class MainProgram:
     def set_parameters(self):
         self.temperature = self.parameters["temperature"]
         self.volumic_mass = self.parameters["volumic_mass"]
-        self.surface_tension = self.parameters["surface_tension"]
-        self.min_frequency = self.parameters["min_frequency"]
-        self.max_frequency = self.parameters["max_frequency"]
-        self.area = self.parameters["area"]
-        self.curvature_frequency = self.parameters["curvature_frequency"]
-        self.capillary_frequency = self.parameters["capillary_frequency"]
+        self.surface_tension = self.parameters["surface_tension"] * 1e-9
+        self.min_frequency = self.parameters["min_frequency"] * 1e-9
+        self.max_frequency = self.parameters["max_frequency"] * 1e-9
+        self.min_distance = 1/self.max_frequency
+        self.max_distance = 1/self.min_frequency
+        self.area = self.parameters["area"] * 1e18
+        self.curvature_frequency = self.parameters["curvature_frequency"] * 1e-9
+        self.capillary_frequency = self.parameters["capillary_frequency"] * 1e-9
         self.resolution = self.parameters["resolution"]
         self.check_and_assign_spectrum_function(self.parameters["spectrum_function"])
 
@@ -66,7 +66,7 @@ class MainProgram:
 
     def init_arrays(self):
         self.wave_vector_array = np.linspace(self.min_frequency, self.max_frequency, self.resolution)
-        self.space_array = np.linspace(0.03, 300, self.resolution)
+        self.space_array = np.linspace(self.min_distance, self.max_distance, self.resolution)
         self.true_space_spectrum = np.zeros(self.resolution)
 
     def compute_true_space_spectrum(self):
@@ -75,7 +75,8 @@ class MainProgram:
                                                                   self.surface_tension)
 
     def compute_true_frequency_spectrum(self):
-        kappa = const.k * self.temperature
+        BOLTZMANN_NM = const.k * 1e18
+        kappa = BOLTZMANN_NM * self.temperature
         self.frequency_spectrum = self.spectrum_function(self.wave_vector_array, self.temperature,
                                                          self.volumic_mass, self.surface_tension, self.area,
                                                          kappa)
@@ -98,6 +99,7 @@ class MainProgram:
         
         visualizer = Visualizer(self.spectrum_filename)
         visualizer.compare_spectrums()
+        visualizer.true_space_spectrum()
         
         
 if __name__ == "__main__":
