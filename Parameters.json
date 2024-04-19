@@ -1,12 +1,13 @@
 {
-    "temperature" : 300,
-    "volumic_mass" : 1000,
-    "surface_tension" : 0.0728,
-    "min_frequency" : 1e6,
-    "max_frequency" : 1e10,
-    "area" : 1e-6,
-    "curvature_frequency" : 4e9,
-    "capillary_frequency" : 400,
-    "spectrum_function" : "base_spectrum",
-    "resolution" : 1000
+    "temperature": 1000,
+    "volumic_mass": 1000,
+    "surface_tension": 72.8,
+    "kappa": 4.1e-21,
+    "area": 1e-6,
+    "spectrum_function": "base_spectrum",
+    "inverse_fourier_transform_method": "inverse_fft",
+    "resolution": 10000,
+    "is_accuracy_test": true,
+    "ft_normalization": "symmetric"
+
 }
