@@ -1,21 +1,26 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-import numpy as np
+from FileHelper import FileHelper
 import pandas as pd
 import seaborn as sns
-import scipy.constants as const
 import json
 
 class Visualizer:
     
-    def __init__(self, spectrum_filename):
-        self.spectrum_filename = spectrum_filename
+    def __init__(self, outputfile_path):
+        self.outputfile_path = outputfile_path
+        self.get_files_path()
         self.load_datas()
         
+    def get_files_path(self): 
+        self.computed_corralation_function_file = FileHelper.give_output_path(self.outputfile_path, "computed_correlation")
+        self.true_correlation_function = FileHelper.give_output_path(self.outputfile_path, "true_correlation")
+        self.frequency_spectrum_file = FileHelper.give_output_path(self.outputfile_path, "frequency_spectrum")
+        
     def load_datas(self):
-        self.spectrum_dataframe = pd.read_csv(self.spectrum_filename)
-        self.true_spectrum_dataframe = pd.read_csv("true_spectrum.csv")
-        self.frequency_spectrum = pd.read_csv("frequency_spectrum.csv")
+        self.computed_correlation_function_df = pd.read_csv(self.computed_corralation_function_file)
+        self.true_correlation_function_df = pd.read_csv(self.true_correlation_function)
+        self.frequency_spectrum = pd.read_csv(self.frequency_spectrum_file)
         
         with open("Parameters.json") as file:
             parameters = json.load(file)
@@ -35,13 +40,13 @@ class Visualizer:
         self.min_distance = computed_parameters["min_distance"]
         self.max_distance = computed_parameters["max_distance"]
         
-    def compare_spectrums(self):
+    def compare_correlation_functions(self):
         sns.set_theme()
         _, ax = plt.subplots()
-        sns.lineplot(x="space", y="spectrum", data=self.true_spectrum_dataframe, color="green", ax=ax,
-                    label="True correlation function")
-        sns.lineplot(x="space", y="spectrum", data=self.spectrum_dataframe, color="purple", ax=ax,
-                       label="Approximated spectrum")
+        sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green",
+                    ax=ax, label="True correlation function")
+        sns.lineplot(x="distance", y="correlation_function", data=self.computed_correlation_function_df, color="purple",
+                     ax=ax, label="Computed correlation function")
         ax.axhline(0, color='grey', linestyle='--')
         ax.axvline(1/self.capillary_frequency, color='grey', linestyle='--')
         ax.axvline(1/self.curvature_frequency, color='grey', linestyle='--')
@@ -49,14 +54,29 @@ class Visualizer:
         #ax.set_ylim(-1e-25, 1e-21)
         #ax.set_yscale("symlog", linthresh=1e-25)
         ax.set_xscale("log")
-        ax.set_xlabel("Distance (nm)")
-        ax.set_ylabel("Correlation function")
-        plt.savefig("Spectrums_comparison.png")
+        ax.set_xlabel("Distance (m)")
+        ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
+        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "comparison_plot"))
         
-    def true_space_spectrum(self):
+    def plot_computed_correlation_function(self):
+        sns.set_theme()
+        _, ax = plt.subplots()
+        sns.lineplot(x="distance", y="correlation_function", data=self.computed_correlation_function_df, color="purple",
+                     ax=ax, label="Computed correlation function")
+        ax.axhline(0, color='grey', linestyle='--')
+        ax.axvline(1/self.capillary_frequency, color='grey', linestyle='--')
+        ax.axvline(1/self.curvature_frequency, color='grey', linestyle='--')
+        ax.legend()
+        ax.set_xscale("log")
+        ax.set_xlabel("Distance (m)")
+        ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
+        ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1e'))
+        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "correlation_plot"))
+        
+    def plot_true_correlation_function(self):
         sns.set_theme()
         _, ax = plt.subplots(figsize=(10, 5))
-        sns.lineplot(x="space", y="spectrum", data=self.true_spectrum_dataframe, color="green", ax=ax,
+        sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green", ax=ax,
                     label="True correlation function")
         ax.axhline(0, color='grey', linestyle='--')
         ax.axvline(1/self.capillary_frequency, color='grey', linestyle='--')
@@ -67,7 +87,7 @@ class Visualizer:
         ax.set_xlabel("Distance (m)")
         ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
         ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1e')) 
-        plt.savefig("True_correration_function.png")
+        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "true_correlation_plot"))
         
     def plot_frequency_spectrum(self):
         sns.set_theme()
@@ -80,4 +100,4 @@ class Visualizer:
         ax.set_xscale("log")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Spectrum")
-        plt.savefig("Frequency_spectrum.png")
+        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "frequency_plot"))

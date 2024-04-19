@@ -1,9 +1,11 @@
 import json
+import os
 import numpy as np
-from Spectrums import CorrelationFunctions
+from CorrelationFunctions import CorrelationFunctions
 from Spectrums import FrequencySpectrums
 from FourierTransform import FourierTransform
 from Visualizer import Visualizer
+from FileHelper import FileHelper
 import scipy.constants as const
 import pandas as pd
 
@@ -25,18 +27,20 @@ class MainProgram:
         self.space_array = None
         self.true_correlation_function = None
         self.frequency_spectrum = None
-        self.space_spectrum = None
-        self.spectrum_filename = None
+        self.computed_correlation_function = None
+        self.correlation_function_path = None
         self.resolution = None
+        self.outputfile_path = FileHelper.init_calculation_directory()
         self.get_parameters_from_json()
         self.set_parameters()
         self.assign_normalisation_factor()
         self.get_files_path()
         self.init_arrays()
         
-    def get_files_path(self):
-        with open("OutputPaths.json") as file:
-            self.spectrum_filename = json.load(file)["spectrum_filename"]
+    def get_files_path(self):   
+        self.correlation_function_path = FileHelper.give_output_path(self.outputfile_path, "computed_correlation")
+        self.true_correlation_function_path = FileHelper.give_output_path(self.outputfile_path, "true_correlation")
+        self.frequency_spectrum_path = FileHelper.give_output_path(self.outputfile_path, "frequency_spectrum")
 
     def get_parameters_from_json(self):
         """
@@ -69,7 +73,8 @@ class MainProgram:
                                "curvature_frequency": self.curvature_frequency, "min_frequency": self.min_frequency,
                                "max_frequency": self.max_frequency, "min_distance": self.min_distance,
                                "max_distance": self.max_distance}
-        with open("ComputedParameters.json", "w") as file:
+        
+        with open(FileHelper.give_output_path(self.outputfile_path, "computed_parameters"), "w") as file:
             json.dump(computed_parameters, file, indent=4)
 
     def check_and_assign_spectrum_function(self, spectrum_function):
@@ -102,7 +107,7 @@ class MainProgram:
                                                          self.kappa)
         
         spectrum_df = pd.DataFrame({'spectrum': self.frequency_spectrum, 'frequency': self.wave_vector_array})
-        spectrum_df.to_csv("frequency_spectrum.csv", index=False)
+        spectrum_df.to_csv(self.frequency_spectrum_path, index=False) #TODO
 
     def assign_normalisation_factor(self):
         if(self.ft_normalization == "symmetric"):
@@ -111,15 +116,17 @@ class MainProgram:
             self.normalisation_factor = 1
         elif(self.ft_normalization == "asymmetric_ift"):
             self.normalisation_factor = self.area/(2*np.pi)**2
+    
     def compute_inverse_fourier_transform(self):
-        self.space_spectrum = self.normalisation_factor * self.inverse_fourier_transform_method(self.frequency_spectrum, self.resolution)
+        self.computed_correlation_function = self.normalisation_factor * self.inverse_fourier_transform_method(self.frequency_spectrum, self.resolution)
 
     def save_results(self):
-        true_spectrum_df = pd.DataFrame({'spectrum': self.true_correlation_function, 'space': self.space_array})
-        fft_spectrum_df = pd.DataFrame({'spectrum': self.space_spectrum, 'space': self.space_array})
-
-        true_spectrum_df.to_csv("true_spectrum.csv", index=False)
-        fft_spectrum_df.to_csv(self.spectrum_filename, index=False)
+        if(self.is_accuracy_test):
+            pd.DataFrame({'correlation_function': self.true_correlation_function, 'distance': self.space_array}) \
+                .to_csv(self.true_correlation_function_path, index=False)
+            
+        pd.DataFrame({'correlation_function': self.computed_correlation_function, 'distance': self.space_array}) \
+            .to_csv(self.correlation_function_path, index=False)
 
     def execute(self):
         if(self.is_accuracy_test):
@@ -128,11 +135,11 @@ class MainProgram:
         self.compute_inverse_fourier_transform()
         self.save_results()
         
-        visualizer = Visualizer(self.spectrum_filename)
+        visualizer = Visualizer(self.outputfile_path)
         if(self.is_accuracy_test):
-            visualizer.compare_spectrums()
+            visualizer.compare_correlation_functions()
+            visualizer.plot_true_correlation_function()  
         visualizer.plot_frequency_spectrum()
-        visualizer.true_space_spectrum()
         
         
 if __name__ == "__main__":
