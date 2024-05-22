@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+import numpy as np
 from FileHelper import FileHelper
 import pandas as pd
 import seaborn as sns
@@ -44,9 +45,9 @@ class Visualizer:
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green",
-                    ax=ax, label="True correlation function")
+                    ax=ax, label="True correlation function", errorbar=None)
         sns.lineplot(x="distance", y="correlation_function", data=self.computed_correlation_function_df, color="purple",
-                     ax=ax, label="Computed correlation function")
+                     ax=ax, label="Computed correlation function", errorbar=None)
         ax.axhline(0, color='grey', linestyle='--')
         ax.axvline(1/self.capillary_frequency, color='grey', linestyle='--')
         ax.axvline(1/self.curvature_frequency, color='grey', linestyle='--')
@@ -56,13 +57,14 @@ class Visualizer:
         ax.set_xscale("log")
         ax.set_xlabel("Distance (m)")
         ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
+        ax.set_title("Computed Correlation Function vs. True Correlation Function 2D")
         plt.savefig(FileHelper.give_output_path(self.outputfile_path, "comparison_plot"))
         
     def plot_computed_correlation_function(self):
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="distance", y="correlation_function", data=self.computed_correlation_function_df, color="purple",
-                     ax=ax, label="Computed correlation function")
+                     ax=ax, label="Computed correlation function", errorbar=None)
         ax.axhline(0, color='grey', linestyle='--')
         ax.axvline(1/self.capillary_frequency, color='grey', linestyle='--')
         ax.axvline(1/self.curvature_frequency, color='grey', linestyle='--')
@@ -70,6 +72,7 @@ class Visualizer:
         ax.set_xscale("log")
         ax.set_xlabel("Distance (m)")
         ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
+        ax.set_title("Computed Correlation Function vs. Distance 2D")
         ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1e'))
         plt.savefig(FileHelper.give_output_path(self.outputfile_path, "correlation_plot"))
         
@@ -77,7 +80,7 @@ class Visualizer:
         sns.set_theme()
         _, ax = plt.subplots(figsize=(10, 5))
         sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green", ax=ax,
-                    label="True correlation function")
+                    label="True correlation function", errorbar=None)
         ax.axhline(0, color='grey', linestyle='--')
         ax.axvline(1/self.capillary_frequency, color='grey', linestyle='--')
         ax.axvline(1/self.curvature_frequency, color='grey', linestyle='--')
@@ -86,18 +89,21 @@ class Visualizer:
         ax.set_xscale("log")
         ax.set_xlabel("Distance (m)")
         ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
+        ax.set_title("True Correlation Function vs. Distance 2D")
         ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1e')) 
         plt.savefig(FileHelper.give_output_path(self.outputfile_path, "true_correlation_plot"))
         
     def plot_frequency_spectrum(self):
         sns.set_theme()
         _, ax = plt.subplots()
-        sns.lineplot(x="frequency", y="spectrum", data=self.frequency_spectrum, color="purple", ax=ax,
-                     label="Frequency spectrum")
+        sns.lineplot(x="norm", y="spectrum", data=self.frequency_spectrum, color="purple", ax=ax,
+                     label="Frequency spectrum", errorbar=None)
         ax.axvline(self.capillary_frequency, color='grey', linestyle='--')
         ax.axvline(self.curvature_frequency, color='grey', linestyle='--')
         ax.set_yscale("log")
         ax.set_xscale("log")
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Spectrum")
+        ax.set_title("Frequency Spectrum vs. Frequency 2D")
         plt.savefig(FileHelper.give_output_path(self.outputfile_path, "frequency_plot"))
+        

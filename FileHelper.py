@@ -48,7 +48,6 @@ class FileHelper:
                 
         return os.path.join(calculation_directory, 'OutputPaths.json')
     
-    
     @staticmethod
     def give_output_path(output_file_path, key):
         """

@@ -4,5 +4,5 @@ import numpy as np
 class FourierTransform:
     
     @staticmethod
-    def inverse_fft(spectrum, resolution):
-        return np.fft.irfft(spectrum, resolution)
+    def inverse_fft_2d(spectrum):
+        return np.fft.irfft2(spectrum)

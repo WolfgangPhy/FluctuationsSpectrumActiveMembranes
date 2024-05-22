@@ -8,6 +8,7 @@ from Visualizer import Visualizer
 from FileHelper import FileHelper
 import scipy.constants as const
 import pandas as pd
+import csv
 
 
 class MainProgram:
@@ -23,8 +24,6 @@ class MainProgram:
         self.temperature = None
         self.spectrum_function = None
         self.parameters = None
-        self.wave_vector_array = None
-        self.space_array = None
         self.true_correlation_function = None
         self.frequency_spectrum = None
         self.computed_correlation_function = None
@@ -92,22 +91,24 @@ class MainProgram:
             raise ValueError("The inverse fourier transform method provided in the parameters is not valid.")
 
     def init_arrays(self):
-        self.wave_vector_array = np.logspace(np.log10(self.min_frequency), np.log10(self.max_frequency), self.resolution)
-        self.space_array = np.linspace(self.min_distance, self.max_distance, self.resolution)
-        self.true_correlation_function = np.zeros(self.resolution)
+        wave_vector_array = np.logspace(np.log10(self.min_frequency), np.log10(self.max_frequency), self.resolution)
+        space_array = np.linspace(self.min_distance, self.max_distance, self.resolution)
+        
+        self.wave_vector_array_x, self.wave_vector_array_y = np.meshgrid(wave_vector_array, wave_vector_array)
+        self.space_array_x, self.space_array_y = np.meshgrid(space_array, space_array)
+        self.true_correlation_function = np.zeros((self.resolution, self.resolution))
+        
+    
 
     def compute_true_correlation_function(self):
-        self.true_correlation_function = CorrelationFunctions.base_correlation_function(self.space_array, self.temperature,
+        self.true_correlation_function = CorrelationFunctions.base_correlation_function(self.space_array_x, self.space_array_y, self.temperature,
                                                                   self.capillary_frequency, self.curvature_frequency,
                                                                   self.surface_tension)
 
     def compute_frequency_spectrum(self):
-        self.frequency_spectrum = self.spectrum_function(self.wave_vector_array, self.temperature,
+        self.frequency_spectrum = self.spectrum_function(self.wave_vector_array_x, self.wave_vector_array_y, self.temperature,
                                                          self.volumic_mass, self.surface_tension, self.area,
                                                          self.kappa)
-        
-        spectrum_df = pd.DataFrame({'spectrum': self.frequency_spectrum, 'frequency': self.wave_vector_array})
-        spectrum_df.to_csv(self.frequency_spectrum_path, index=False) #TODO
 
     def assign_normalisation_factor(self):
         if(self.ft_normalization == "symmetric"):
@@ -118,15 +119,39 @@ class MainProgram:
             self.normalisation_factor = self.area/(2*np.pi)**2
     
     def compute_inverse_fourier_transform(self):
-        self.computed_correlation_function = self.normalisation_factor * self.inverse_fourier_transform_method(self.frequency_spectrum, self.resolution)
+        self.computed_correlation_function = self.normalisation_factor * self.inverse_fourier_transform_method(self.frequency_spectrum)
 
     def save_results(self):
-        if(self.is_accuracy_test):
-            pd.DataFrame({'correlation_function': self.true_correlation_function, 'distance': self.space_array}) \
-                .to_csv(self.true_correlation_function_path, index=False)
+        if(self.is_accuracy_test):    
+            with open(self.true_correlation_function_path, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['x', 'y', 'distance', 'correlation_function'])
+                for i in range(self.resolution):
+                    for j in range(self.resolution):
+                        writer.writerow([self.space_array_x[i, j],
+                                         self.space_array_y[i, j],
+                                         np.sqrt(self.space_array_x[i, j]**2 + self.space_array_y[i, j]**2),
+                                         self.true_correlation_function[i, j]])
             
-        pd.DataFrame({'correlation_function': self.computed_correlation_function, 'distance': self.space_array}) \
-            .to_csv(self.correlation_function_path, index=False)
+        with open(self.correlation_function_path, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['x', 'y', 'distance', 'correlation_function'])
+                for i in range(self.resolution):
+                    for j in range(self.resolution):
+                        writer.writerow([self.space_array_x[i, j],
+                                         self.space_array_y[i, j],
+                                         np.sqrt(self.space_array_x[i, j]**2 + self.space_array_y[i, j]**2),
+                                         self.computed_correlation_function[i, j]])
+                        
+        with open(self.frequency_spectrum_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['kx', 'ky', 'norm', 'spectrum'])  # Write the header
+            for i in range(self.resolution):
+                for j in range(self.resolution):
+                    writer.writerow([self.wave_vector_array_x[i, j],
+                                     self.wave_vector_array_y[i, j],
+                                     np.sqrt(self.wave_vector_array_x[i, j]**2 + self.wave_vector_array_y[i, j]**2),
+                                     self.frequency_spectrum[i, j]])
 
     def execute(self):
         if(self.is_accuracy_test):
@@ -140,6 +165,7 @@ class MainProgram:
             visualizer.compare_correlation_functions()
             visualizer.plot_true_correlation_function()  
         visualizer.plot_frequency_spectrum()
+        visualizer.plot_computed_correlation_function()
         
         
 if __name__ == "__main__":
