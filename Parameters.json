@@ -4,8 +4,8 @@
     "surface_tension": 72.8,
     "kappa": 4.1e-21,
     "area": 1e-6,
-    "spectrum_function": "base_spectrum_2d",
-    "inverse_fourier_transform_method": "inverse_fft_2d",
+    "spectrum_function": "base_spectrum",
+    "inverse_fourier_transform_method": "inverse_fft",
     "resolution": 100,
     "is_accuracy_test": true,
     "ft_normalization": "symmetric"

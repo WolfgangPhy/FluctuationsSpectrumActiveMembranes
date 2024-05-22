@@ -16,7 +16,7 @@ class FileHelper:
         
         if not os.path.exists(calculation_directory):
             os.makedirs(calculation_directory)
-        elif input("Calculations with this spectrum was already done, do you want to redo these calculations "+
+        elif input("Calculations with this spectrum was already done, do you want to redo these calculations " +
                    "(this will overwrite previous calculations) ? (y/n): ") == "y":
             return os.path.join(calculation_directory, "OutputPaths.json")
         else:
@@ -44,7 +44,7 @@ class FileHelper:
         paths["true_correlation_plot"] = os.path.join('./', calculation_directory, paths['true_correlation_plot'][2:])
         
         with open(os.path.join(calculation_directory, 'OutputPaths.json'), 'w') as new_output_file:
-                json.dump(paths, new_output_file, indent=4)
+            json.dump(paths, new_output_file, indent=4)
                 
         return os.path.join(calculation_directory, 'OutputPaths.json')
     
