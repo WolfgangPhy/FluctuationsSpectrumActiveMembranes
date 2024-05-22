@@ -4,9 +4,20 @@ import shutil
 
 
 class FileHelper:
-    
+    """
+    Helper class for file operations.
+    """
     @staticmethod
     def init_calculation_directory():
+        """
+        Initializes the calculation directory and returns the path to the output path file.
+
+        Raises:
+            FileExistsError: When the calculation directory already exists and the user does not want to overwrite it.
+
+        Returns:
+            str: The path to the file that contain all the output paths for the current calculation.
+        """
         with open("Parameters.json") as file:
             parameters = json.load(file)
         

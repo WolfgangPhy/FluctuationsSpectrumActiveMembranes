@@ -9,8 +9,16 @@ from FileHelper import FileHelper
 
 
 class Visualizer:
-
+    """
+    Class that manages the visualization of the results of the calculations.
+    """
     def __init__(self, outputfile_path):
+        """
+        Constructor of the Visualizer class.
+
+        # Args:
+            outputfile_path (str): Path to the current calculation directory.
+        """
         self.max_distance = None
         self.min_distance = None
         self.max_frequency = None
@@ -34,12 +42,18 @@ class Visualizer:
         self.load_datas()
 
     def get_files_path(self):
+        """
+        Retrieves the paths to the files containing the results of the calculations.
+        """
         self.computed_correlation_function_file = FileHelper.give_output_path(self.outputfile_path,
                                                                               "computed_correlation")
         self.true_correlation_function = FileHelper.give_output_path(self.outputfile_path, "true_correlation")
         self.frequency_spectrum_file = FileHelper.give_output_path(self.outputfile_path, "frequency_spectrum")
 
     def load_datas(self):
+        """
+        Loads the data from the files containing the results of the calculations.
+        """
         self.computed_correlation_function_df = pd.read_csv(self.computed_correlation_function_file)
         self.true_correlation_function_df = pd.read_csv(self.true_correlation_function)
         self.frequency_spectrum = pd.read_csv(self.frequency_spectrum_file)
@@ -63,6 +77,9 @@ class Visualizer:
         self.max_distance = computed_parameters["max_distance"]
 
     def compare_correlation_functions(self):
+        """
+        Plots the comparison between the computed correlation function and the true correlation function.
+        """
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green",
@@ -82,6 +99,9 @@ class Visualizer:
         plt.savefig(FileHelper.give_output_path(self.outputfile_path, "comparison_plot"))
 
     def plot_computed_correlation_function(self):
+        """
+        Plots the computed correlation function.
+        """
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="distance", y="correlation_function", data=self.computed_correlation_function_df, color="purple",
@@ -98,6 +118,9 @@ class Visualizer:
         plt.savefig(FileHelper.give_output_path(self.outputfile_path, "correlation_plot"))
 
     def plot_true_correlation_function(self):
+        """
+        Plots the true correlation function.
+        """
         sns.set_theme()
         _, ax = plt.subplots(figsize=(10, 5))
         sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green",
@@ -116,6 +139,9 @@ class Visualizer:
         plt.savefig(FileHelper.give_output_path(self.outputfile_path, "true_correlation_plot"))
 
     def plot_frequency_spectrum(self):
+        """
+        Plots the frequency spectrum.
+        """
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="norm", y="spectrum", data=self.frequency_spectrum, color="purple", ax=ax,
