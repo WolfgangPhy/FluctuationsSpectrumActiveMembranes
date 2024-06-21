@@ -63,63 +63,75 @@ class MainProgram:
         - `save_results()`: Saves the results to CSV files.
         - `execute()`: Executes the main program flow.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the MainProgram object and sets the default values for the attributes.
+        
+        # Returns:
+            None
         """
-        self.kappa = None
-        self.max_distance = None
-        self.min_distance = None
-        self.ft_normalization = None
-        self.is_accuracy_test = None
-        self.normalisation_factor = None
-        self.space_array_y = None
-        self.space_array_x = None
-        self.wave_vector_array_y = None
-        self.wave_vector_array_x = None
-        self.inverse_fourier_transform_method = None
-        self.frequency_spectrum_path = None
-        self.true_correlation_function_path = None
-        self.capillary_frequency = None
-        self.curvature_frequency = None
-        self.area = None
-        self.max_frequency = None
-        self.min_frequency = None
-        self.surface_tension = None
-        self.volumic_mass = None
-        self.temperature = None
-        self.spectrum_function = None
-        self.parameters = None
-        self.true_correlation_function = None
-        self.frequency_spectrum = None
-        self.computed_correlation_function = None
-        self.correlation_function_path = None
-        self.resolution = None
-        self.calculation_paths_file_path = FileHelper.init_calculation_directory()
+        self.kappa : float = None
+        self.max_distance : float = None
+        self.min_distance : float = None
+        self.ft_normalization : str = None
+        self.is_accuracy_test : bool = None
+        self.normalisation_factor : float = None
+        self.space_array_y : np.ndarray = None
+        self.space_array_x : np.ndarray = None
+        self.wave_vector_array_y : np.ndarray = None
+        self.wave_vector_array_x : np.ndarray = None
+        self.inverse_fourier_transform_method : callable = None
+        self.frequency_spectrum_path : str = None
+        self.true_correlation_function_path : str = None
+        self.capillary_frequency : float = None
+        self.curvature_frequency : float = None
+        self.area : float = None
+        self.max_frequency : float = None
+        self.min_frequency : float = None
+        self.surface_tension : float = None
+        self.volumic_mass : float = None
+        self.temperature : float = None
+        self.spectrum_function : callable = None
+        self.parameters : dict = None
+        self.true_correlation_function : np.ndarray = None
+        self.frequency_spectrum : np.ndarray = None
+        self.computed_correlation_function : np.ndarray = None
+        self.correlation_function_path : str = None
+        self.resolution : int = None
+        self.calculation_paths_file_path : str = FileHelper.init_calculation_directory()
         self.get_parameters_from_json()
         self.set_parameters()
         self.assign_normalisation_factor()
         self.get_files_path()
         self.init_arrays()
 
-    def get_files_path(self):
+    def get_files_path(self) -> None:
         """
         Gets the paths for the output files from OutputPaths.json file.
+        
+        # Returns:
+            None
         """
         self.correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path, "computed_correlation")
         self.true_correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path, "true_correlation")
         self.frequency_spectrum_path = FileHelper.give_output_path(self.calculation_paths_file_path, "frequency_spectrum")
 
-    def get_parameters_from_json(self):
+    def get_parameters_from_json(self) -> None:
         """
         Loads parameters from the "Parameters.json" file and assigns them to the MainProgram `parameters` attribute.
+        
+        # Returns:
+            None
         """
         with open("Parameters.json") as file:
             self.parameters = json.load(file)
 
-    def set_parameters(self):
+    def set_parameters(self) -> None:
         """
         Sets the parameters from the loaded parameters dictionary.
+        
+        # Returns:
+            None
         """
         self.temperature = self.parameters["temperature"]
         self.volumic_mass = self.parameters["volumic_mass"]
@@ -139,11 +151,14 @@ class MainProgram:
         self.check_and_assign_spectrum_function(self.parameters["spectrum_function"])
         self.check_and_assign_inverse_fourier_transform_method(self.parameters["inverse_fourier_transform_method"])
 
-    def save_computed_parameters(self):
+    def save_computed_parameters(self) -> None:
         """
         Saves the computed parameters in the current calculation directory.
+        
+        # Returns:
+            None
         """
-        computed_parameters = {"capillary_frequency": self.capillary_frequency,
+        computed_parameters : dict = {"capillary_frequency": self.capillary_frequency,
                                "curvature_frequency": self.curvature_frequency, "min_frequency": self.min_frequency,
                                "max_frequency": self.max_frequency, "min_distance": self.min_distance,
                                "max_distance": self.max_distance}
@@ -151,7 +166,7 @@ class MainProgram:
         with open(FileHelper.give_output_path(self.calculation_paths_file_path, "computed_parameters"), "w") as file:
             json.dump(computed_parameters, file, indent=4)
 
-    def check_and_assign_spectrum_function(self, spectrum_function):
+    def check_and_assign_spectrum_function(self, spectrum_function) -> None:
         """
         Checks if the spectrum function provided in the parameters is valid (correspond to an existing method in
         Spectrums.py) and assigns it to the MainProgram
@@ -161,14 +176,17 @@ class MainProgram:
 
         # Raises:
             ValueError: If the spectrum function provided in the parameters is not valid.
+            
+        # Returns:
+            None
         """
-        spectrum_method = getattr(FrequencySpectrums, spectrum_function, None)
+        spectrum_method : callable = getattr(FrequencySpectrums, spectrum_function, None)
         if spectrum_method is not None and callable(spectrum_method):
             self.spectrum_function = spectrum_method
         else:
             raise ValueError("The spectrum function provided in the parameters is not valid.")
 
-    def check_and_assign_inverse_fourier_transform_method(self, inverse_fourier_transform_method):
+    def check_and_assign_inverse_fourier_transform_method(self, inverse_fourier_transform_method) -> None:
         """
         Checks if the inverse fourier transform method provided in the parameters is valid (correspond to an existing
 
@@ -178,27 +196,36 @@ class MainProgram:
 
         # Raises:
             ValueError: If the inverse fourier transform method provided in the parameters is not valid.
+            
+        # Returns:
+            None
         """
-        inverse_fourier_transform_method = getattr(FourierTransform, inverse_fourier_transform_method, None)
+        inverse_fourier_transform_method : callable = getattr(FourierTransform, inverse_fourier_transform_method, None)
         if inverse_fourier_transform_method is not None and callable(inverse_fourier_transform_method):
             self.inverse_fourier_transform_method = inverse_fourier_transform_method
         else:
             raise ValueError("The inverse fourier transform method provided in the parameters is not valid.")
 
-    def init_arrays(self):
+    def init_arrays(self) -> None:
         """
         Initializes arrays for space, wave vectors, and the true correlation function.
+        
+        # Returns:
+            None
         """
-        wave_vector_array = np.logspace(np.log10(self.min_frequency), np.log10(self.max_frequency), self.resolution)
-        space_array = np.linspace(self.min_distance, self.max_distance, self.resolution)
+        wave_vector_array : np.ndarray = np.logspace(np.log10(self.min_frequency), np.log10(self.max_frequency), self.resolution)
+        space_array : np.ndarray = np.linspace(self.min_distance, self.max_distance, self.resolution)
 
         self.wave_vector_array_x, self.wave_vector_array_y = np.meshgrid(wave_vector_array, wave_vector_array)
         self.space_array_x, self.space_array_y = np.meshgrid(space_array, space_array)
         self.true_correlation_function = np.zeros((self.resolution, self.resolution))
 
-    def compute_true_correlation_function(self):
+    def compute_true_correlation_function(self) -> None:
         """
         Computes the true correlation function using the base_correlation_function method from CorrelationFunctions.py.
+        
+        # Returns:
+            None
         """
         self.true_correlation_function = CorrelationFunctions.base_correlation_function(self.space_array_x,
                                                                                         self.space_array_y,
@@ -207,16 +234,19 @@ class MainProgram:
                                                                                         self.curvature_frequency,
                                                                                         self.surface_tension)
 
-    def compute_frequency_spectrum(self):
+    def compute_frequency_spectrum(self) -> None:
         """
         Computes the frequency spectrum using the spectrum function provided in the parameters.
+        
+        # Returns:
+            None
         """
         self.frequency_spectrum = self.spectrum_function(self.wave_vector_array_x, self.wave_vector_array_y,
                                                          self.temperature,
                                                          self.volumic_mass, self.surface_tension, self.area,
                                                          self.kappa)
 
-    def assign_normalisation_factor(self):
+    def assign_normalisation_factor(self) -> None:
         """
         Assigns the normalisation factor based on the Fourier Transform normalization method provided in the parameters.
         
@@ -230,6 +260,9 @@ class MainProgram:
             to the Fourier Transform and so it will not be applied to the inverse Fourier Transform.
             - `asymmetric_ift`: The squared normalisation factor is considered to not have been applied to the Fourier 
             Transform and so it will be applied to the inverse Fourier Transform.
+            
+        # Returns:
+            None
         """
         if self.ft_normalization == "symmetric":
             self.normalisation_factor = np.sqrt(self.area) / (2 * np.pi)
@@ -238,20 +271,26 @@ class MainProgram:
         elif self.ft_normalization == "asymmetric_ift":
             self.normalisation_factor = self.area / (2 * np.pi) ** 2
 
-    def compute_inverse_fourier_transform(self):
+    def compute_inverse_fourier_transform(self) -> None:
         """
         Computes the inverse Fourier Transform using the inverse Fourier Transform method provided in the parameters.
+        
+        # Returns:
+            None
         """
         self.computed_correlation_function = self.normalisation_factor * self.inverse_fourier_transform_method(
             self.frequency_spectrum)
 
-    def save_results(self):
+    def save_results(self) -> None:
         """
         Saves the results to CSV files in the current calculation directory.
+        
+        # Returns:
+            None
         """
         if self.is_accuracy_test:
             with open(self.true_correlation_function_path, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
+                writer : csv._writer = csv.writer(csvfile)
                 writer.writerow(['x', 'y', 'distance', 'correlation_function'])
                 for i in range(self.resolution):
                     for j in range(self.resolution):
@@ -261,7 +300,7 @@ class MainProgram:
                                          self.true_correlation_function[i, j]])
 
         with open(self.correlation_function_path, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
+            writer : csv._writer = csv.writer(csvfile)
             writer.writerow(['x', 'y', 'distance', 'correlation_function'])
             for i in range(self.resolution):
                 for j in range(self.resolution):
@@ -271,7 +310,7 @@ class MainProgram:
                                      self.computed_correlation_function[i, j]])
 
         with open(self.frequency_spectrum_path, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
+            writer : csv._writer = csv.writer(csvfile)
             writer.writerow(['kx', 'ky', 'norm', 'spectrum'])
             for i in range(self.resolution):
                 for j in range(self.resolution):
@@ -280,7 +319,7 @@ class MainProgram:
                                      np.sqrt(self.wave_vector_array_x[i, j] ** 2 + self.wave_vector_array_y[i, j] ** 2),
                                      self.frequency_spectrum[i, j]])
 
-    def execute(self):
+    def execute(self) -> None:
         """
         Executes the main program flow, including computing the true correlation function, the frequency spectrum,
         the inverse Fourier Transform, and saving the results.
@@ -289,6 +328,9 @@ class MainProgram:
             If the `is_accuracy_test` attribute is set to True, the true correlation function will be computed and
              saved and
             comparison plots will be generated.
+            
+        # Returns:
+            None
         """
         if self.is_accuracy_test:
             self.compute_true_correlation_function()
@@ -300,7 +342,7 @@ class MainProgram:
         self.save_results()
 
         print("Plotting results...")
-        visualizer = Visualizer(self.calculation_paths_file_path)
+        visualizer : Visualizer = Visualizer(self.calculation_paths_file_path)
         if self.is_accuracy_test:
             visualizer.compare_correlation_functions()
             visualizer.plot_true_correlation_function()

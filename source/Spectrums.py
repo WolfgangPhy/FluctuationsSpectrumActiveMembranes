@@ -1,4 +1,5 @@
 import scipy.constants as const
+import numpy as np
 
 
 class FrequencySpectrums:
@@ -6,7 +7,7 @@ class FrequencySpectrums:
     Class to store the different frequency spectrums that can be used in the calculations.
     """
     @staticmethod
-    def base_spectrum(wave_vector_x, wave_vector_y, temperature, volumic_mass, surface_tension, area, kappa):
+    def base_spectrum(wave_vector_x : np.ndarray, wave_vector_y : np.ndarray, temperature : float, volumic_mass : float, surface_tension : float, area : float, kappa : float) -> np.ndarray:
         """
         Base spectrum used to calibrate and test the algorithms.
 
