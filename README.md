@@ -133,3 +133,5 @@ The first thing to improve this code is, of course to successfully retrieve the 
 When this is done you can start to test the code for more spectrums.
 
 But for this you will maybe need to change the number of parameters and the nature of the parameters. An improvement of the code would be to make the code more flexible by allowing the user to add more parameters to the `Parameters.json` file without having to change the code.
+
+I Personnaly strongly encourage you to fork this repository in order to have a better control of the code and to be able to modify it as you want.

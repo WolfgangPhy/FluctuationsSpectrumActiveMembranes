@@ -36,12 +36,14 @@ class Visualizer:
     # Methods:
         `get_files_path()`: Retrieves the paths to the files containing the results of the calculations.
         `load_datas()`: Loads the data from the files containing the results of the calculations.
-        `compare_correlation_functions()`: Plots the comparison between the computed correlation function and the true correlation function.
+        `compare_correlation_functions()`: Plots the comparison between the computed correlation function and the true
+         correlation function.
         `plot_computed_correlation_function()`: Plots the computed correlation function.
         `plot_true_correlation_function()`: Plots the true correlation function.
         `plot_frequency_spectrum()`: Plots the frequency spectrum.
     """
-    def __init__(self, calculation_paths_file_path : str) -> None:
+
+    def __init__(self, calculation_paths_file_path: str) -> None:
         """
         Constructor of the Visualizer class.
 
@@ -50,25 +52,25 @@ class Visualizer:
         # Returns:
             None
         """
-        self.max_distance : float = None
-        self.min_distance : float = None
-        self.max_frequency : float = None
-        self.min_frequency : float = None
-        self.curvature_frequency : float = None
-        self.capillary_frequency : float = None
-        self.resolution : int = None
-        self.area : float = None
-        self.kappa : float = None
-        self.surface_tension : float = None
-        self.volumic_mass : float = None
-        self.temperature : float = None
-        self.frequency_spectrum : float = None
-        self.true_correlation_function_df : pd.DataFrame = None
-        self.computed_correlation_function_df : pd.DataFrame = None
-        self.frequency_spectrum_filepath : str = None
-        self.true_correlation_function_filepath : str = None
-        self.computed_correlation_function_filepath : str = None
-        self.calculation_directory_path : str = calculation_paths_file_path
+        self.max_distance: float = None
+        self.min_distance: float = None
+        self.max_frequency: float = None
+        self.min_frequency: float = None
+        self.curvature_frequency: float = None
+        self.capillary_frequency: float = None
+        self.resolution: int = None
+        self.area: float = None
+        self.kappa: float = None
+        self.surface_tension: float = None
+        self.volumic_mass: float = None
+        self.temperature: float = None
+        self.frequency_spectrum: float = None
+        self.true_correlation_function_df: pd.DataFrame = None
+        self.computed_correlation_function_df: pd.DataFrame = None
+        self.frequency_spectrum_filepath: str = None
+        self.true_correlation_function_filepath: str = None
+        self.computed_correlation_function_filepath: str = None
+        self.calculation_directory_path: str = calculation_paths_file_path
         self.get_files_path()
         self.load_datas()
 
@@ -80,9 +82,11 @@ class Visualizer:
             None
         """
         self.computed_correlation_function_filepath = FileHelper.give_output_path(self.calculation_directory_path,
-                                                                              "computed_correlation")
-        self.true_correlation_function_filepath = FileHelper.give_output_path(self.calculation_directory_path, "true_correlation")
-        self.frequency_spectrum_filepath = FileHelper.give_output_path(self.calculation_directory_path, "frequency_spectrum")
+                                                                                  "computed_correlation")
+        self.true_correlation_function_filepath = FileHelper.give_output_path(self.calculation_directory_path,
+                                                                              "true_correlation")
+        self.frequency_spectrum_filepath = FileHelper.give_output_path(self.calculation_directory_path,
+                                                                       "frequency_spectrum")
 
     def load_datas(self) -> None:
         """
@@ -95,7 +99,7 @@ class Visualizer:
         self.true_correlation_function_df = pd.read_csv(self.true_correlation_function_filepath)
         self.frequency_spectrum = pd.read_csv(self.frequency_spectrum_filepath)
 
-        with open(FileHelper.give_output_path(self.calculation_directory_path,"parameters")) as file:
+        with open(FileHelper.give_output_path(self.calculation_directory_path, "parameters")) as file:
             parameters = json.load(file)
         self.temperature = parameters["temperature"]
         self.volumic_mass = parameters["volumic_mass"]
@@ -120,8 +124,6 @@ class Visualizer:
         # Returns:
             None
         """
-        ax : plt.Axes = None
-        
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green",
@@ -147,8 +149,6 @@ class Visualizer:
         # Returns:
             None
         """
-        ax : plt.Axes = None
-        
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="distance", y="correlation_function", data=self.computed_correlation_function_df, color="purple",
@@ -171,8 +171,6 @@ class Visualizer:
         # Returns:
             None
         """
-        ax : plt.Axes = None
-        
         sns.set_theme()
         _, ax = plt.subplots(figsize=(10, 5))
         sns.lineplot(x="distance", y="correlation_function", data=self.true_correlation_function_df, color="green",
@@ -197,8 +195,6 @@ class Visualizer:
         # Returns:
             None
         """
-        ax : plt.Axes = None
-        
         sns.set_theme()
         _, ax = plt.subplots()
         sns.lineplot(x="norm", y="spectrum", data=self.frequency_spectrum, color="purple", ax=ax,

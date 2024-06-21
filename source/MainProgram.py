@@ -63,6 +63,7 @@ class MainProgram:
         - `save_results()`: Saves the results to CSV files.
         - `execute()`: Executes the main program flow.
     """
+
     def __init__(self) -> None:
         """
         Initializes the MainProgram object and sets the default values for the attributes.
@@ -70,35 +71,35 @@ class MainProgram:
         # Returns:
             None
         """
-        self.kappa : float = None
-        self.max_distance : float = None
-        self.min_distance : float = None
-        self.ft_normalization : str = None
-        self.is_accuracy_test : bool = None
-        self.normalisation_factor : float = None
-        self.space_array_y : np.ndarray = None
-        self.space_array_x : np.ndarray = None
-        self.wave_vector_array_y : np.ndarray = None
-        self.wave_vector_array_x : np.ndarray = None
-        self.inverse_fourier_transform_method : callable = None
-        self.frequency_spectrum_path : str = None
-        self.true_correlation_function_path : str = None
-        self.capillary_frequency : float = None
-        self.curvature_frequency : float = None
-        self.area : float = None
-        self.max_frequency : float = None
-        self.min_frequency : float = None
-        self.surface_tension : float = None
-        self.volumic_mass : float = None
-        self.temperature : float = None
-        self.spectrum_function : callable = None
-        self.parameters : dict = None
-        self.true_correlation_function : np.ndarray = None
-        self.frequency_spectrum : np.ndarray = None
-        self.computed_correlation_function : np.ndarray = None
-        self.correlation_function_path : str = None
-        self.resolution : int = None
-        self.calculation_paths_file_path : str = FileHelper.init_calculation_directory()
+        self.kappa: float = None
+        self.max_distance: float = None
+        self.min_distance: float = None
+        self.ft_normalization: str = None
+        self.is_accuracy_test: bool = None
+        self.normalisation_factor: float = None
+        self.space_array_y: np.ndarray = None
+        self.space_array_x: np.ndarray = None
+        self.wave_vector_array_y: np.ndarray = None
+        self.wave_vector_array_x: np.ndarray = None
+        self.inverse_fourier_transform_method: callable = None
+        self.frequency_spectrum_path: str = None
+        self.true_correlation_function_path: str = None
+        self.capillary_frequency: float = None
+        self.curvature_frequency: float = None
+        self.area: float = None
+        self.max_frequency: float = None
+        self.min_frequency: float = None
+        self.surface_tension: float = None
+        self.volumic_mass: float = None
+        self.temperature: float = None
+        self.spectrum_function: callable = None
+        self.parameters: dict = None
+        self.true_correlation_function: np.ndarray = None
+        self.frequency_spectrum: np.ndarray = None
+        self.computed_correlation_function: np.ndarray = None
+        self.correlation_function_path: str = None
+        self.resolution: int = None
+        self.calculation_paths_file_path: str = FileHelper.init_calculation_directory()
         self.get_parameters_from_json()
         self.set_parameters()
         self.assign_normalisation_factor()
@@ -112,9 +113,12 @@ class MainProgram:
         # Returns:
             None
         """
-        self.correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path, "computed_correlation")
-        self.true_correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path, "true_correlation")
-        self.frequency_spectrum_path = FileHelper.give_output_path(self.calculation_paths_file_path, "frequency_spectrum")
+        self.correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path,
+                                                                     "computed_correlation")
+        self.true_correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path,
+                                                                          "true_correlation")
+        self.frequency_spectrum_path = FileHelper.give_output_path(self.calculation_paths_file_path,
+                                                                   "frequency_spectrum")
 
     def get_parameters_from_json(self) -> None:
         """
@@ -158,10 +162,11 @@ class MainProgram:
         # Returns:
             None
         """
-        computed_parameters : dict = {"capillary_frequency": self.capillary_frequency,
-                               "curvature_frequency": self.curvature_frequency, "min_frequency": self.min_frequency,
-                               "max_frequency": self.max_frequency, "min_distance": self.min_distance,
-                               "max_distance": self.max_distance}
+        computed_parameters: dict = {"capillary_frequency": self.capillary_frequency,
+                                     "curvature_frequency": self.curvature_frequency,
+                                     "min_frequency": self.min_frequency,
+                                     "max_frequency": self.max_frequency, "min_distance": self.min_distance,
+                                     "max_distance": self.max_distance}
 
         with open(FileHelper.give_output_path(self.calculation_paths_file_path, "computed_parameters"), "w") as file:
             json.dump(computed_parameters, file, indent=4)
@@ -180,7 +185,7 @@ class MainProgram:
         # Returns:
             None
         """
-        spectrum_method : callable = getattr(FrequencySpectrums, spectrum_function, None)
+        spectrum_method: callable = getattr(FrequencySpectrums, spectrum_function, None)
         if spectrum_method is not None and callable(spectrum_method):
             self.spectrum_function = spectrum_method
         else:
@@ -200,7 +205,7 @@ class MainProgram:
         # Returns:
             None
         """
-        inverse_fourier_transform_method : callable = getattr(FourierTransform, inverse_fourier_transform_method, None)
+        inverse_fourier_transform_method: callable = getattr(FourierTransform, inverse_fourier_transform_method, None)
         if inverse_fourier_transform_method is not None and callable(inverse_fourier_transform_method):
             self.inverse_fourier_transform_method = inverse_fourier_transform_method
         else:
@@ -213,8 +218,9 @@ class MainProgram:
         # Returns:
             None
         """
-        wave_vector_array : np.ndarray = np.logspace(np.log10(self.min_frequency), np.log10(self.max_frequency), self.resolution)
-        space_array : np.ndarray = np.linspace(self.min_distance, self.max_distance, self.resolution)
+        wave_vector_array: np.ndarray = np.logspace(np.log10(self.min_frequency), np.log10(self.max_frequency),
+                                                    self.resolution)
+        space_array: np.ndarray = np.linspace(self.min_distance, self.max_distance, self.resolution)
 
         self.wave_vector_array_x, self.wave_vector_array_y = np.meshgrid(wave_vector_array, wave_vector_array)
         self.space_array_x, self.space_array_y = np.meshgrid(space_array, space_array)
@@ -290,7 +296,7 @@ class MainProgram:
         """
         if self.is_accuracy_test:
             with open(self.true_correlation_function_path, 'w', newline='') as csvfile:
-                writer : csv._writer = csv.writer(csvfile)
+                writer = csv.writer(csvfile)
                 writer.writerow(['x', 'y', 'distance', 'correlation_function'])
                 for i in range(self.resolution):
                     for j in range(self.resolution):
@@ -300,7 +306,7 @@ class MainProgram:
                                          self.true_correlation_function[i, j]])
 
         with open(self.correlation_function_path, 'w', newline='') as csvfile:
-            writer : csv._writer = csv.writer(csvfile)
+            writer = csv.writer(csvfile)
             writer.writerow(['x', 'y', 'distance', 'correlation_function'])
             for i in range(self.resolution):
                 for j in range(self.resolution):
@@ -310,7 +316,7 @@ class MainProgram:
                                      self.computed_correlation_function[i, j]])
 
         with open(self.frequency_spectrum_path, 'w', newline='') as csvfile:
-            writer : csv._writer = csv.writer(csvfile)
+            writer = csv.writer(csvfile)
             writer.writerow(['kx', 'ky', 'norm', 'spectrum'])
             for i in range(self.resolution):
                 for j in range(self.resolution):
@@ -342,7 +348,7 @@ class MainProgram:
         self.save_results()
 
         print("Plotting results...")
-        visualizer : Visualizer = Visualizer(self.calculation_paths_file_path)
+        visualizer: Visualizer = Visualizer(self.calculation_paths_file_path)
         if self.is_accuracy_test:
             visualizer.compare_correlation_functions()
             visualizer.plot_true_correlation_function()

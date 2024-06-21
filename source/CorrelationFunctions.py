@@ -14,8 +14,10 @@ class CorrelationFunctions:
     # Returns:
         numpy.ndarray: The correlation function.
     """
+
     @staticmethod
-    def base_correlation_function(x : np.ndarray, y : np.ndarray, temperature : float, capillary_frequency : float, curvature_frequency : float, surface_tension : float) -> np.ndarray:
+    def base_correlation_function(x: np.ndarray, y: np.ndarray, temperature: float, capillary_frequency: float,
+                                  curvature_frequency: float, surface_tension: float) -> np.ndarray:
         """
         Base correlation function used to calibrate and test the algorithms.
 
@@ -30,9 +32,9 @@ class CorrelationFunctions:
         Returns:
             numpy.ndarray: the correlation function.
         """
-        distance : np.ndarray = (x ** 2 + y ** 2) ** 0.5
-        
-        factor : float = const.k * temperature / (2 * const.pi * surface_tension)
-        bessel_capillary : np.ndarray = bessel_second_kind(0, distance * capillary_frequency)
-        bessel_curvature : np.ndarray = bessel_second_kind(0, distance * curvature_frequency)
+        distance: np.ndarray = (x ** 2 + y ** 2) ** 0.5
+
+        factor: float = const.k * temperature / (2 * const.pi * surface_tension)
+        bessel_capillary: np.ndarray = bessel_second_kind(0, distance * capillary_frequency)
+        bessel_curvature: np.ndarray = bessel_second_kind(0, distance * curvature_frequency)
         return factor * (bessel_capillary - bessel_curvature)

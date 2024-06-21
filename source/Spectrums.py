@@ -6,8 +6,10 @@ class FrequencySpectrums:
     """
     Class to store the different frequency spectrums that can be used in the calculations.
     """
+
     @staticmethod
-    def base_spectrum(wave_vector_x : np.ndarray, wave_vector_y : np.ndarray, temperature : float, volumic_mass : float, surface_tension : float, area : float, kappa : float) -> np.ndarray:
+    def base_spectrum(wave_vector_x: np.ndarray, wave_vector_y: np.ndarray, temperature: float, volumic_mass: float,
+                      surface_tension: float, area: float, kappa: float) -> np.ndarray:
         """
         Base spectrum used to calibrate and test the algorithms.
 
@@ -24,8 +26,8 @@ class FrequencySpectrums:
             numpy.ndarray: The spectrum 
         """
         wave_vector_norm = (wave_vector_x ** 2 + wave_vector_y ** 2) ** 0.5
-        
+
         spectrum = 1.0 / area * const.k * temperature / (
-                    volumic_mass * const.g + surface_tension * wave_vector_norm ** 2
-                    + kappa * wave_vector_norm ** 4)
+                volumic_mass * const.g + surface_tension * wave_vector_norm ** 2
+                + kappa * wave_vector_norm ** 4)
         return spectrum
