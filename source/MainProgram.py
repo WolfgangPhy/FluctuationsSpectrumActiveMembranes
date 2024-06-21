@@ -2,6 +2,7 @@ import csv
 import json
 
 import numpy as np
+from pathlib import Path
 
 from CorrelationFunctions import CorrelationFunctions
 from FileHelper import FileHelper
@@ -44,7 +45,7 @@ class MainProgram:
         - `computed_correlation_function (ndarray)`: The computed correlation function.
         - `correlation_function_path (str)`: The path to save the computed correlation function.
         - `resolution (int)`: The resolution (number of points in the space and frequency arrays).
-        - `outputfile_path (str)`: The path for output files.
+        - `calculation_paths_file_path (str)`: The path of the current calculation directory.
 
     # Methods:
         - `get_files_path()`: Gets the paths for output files.
@@ -94,7 +95,7 @@ class MainProgram:
         self.computed_correlation_function = None
         self.correlation_function_path = None
         self.resolution = None
-        self.outputfile_path = FileHelper.init_calculation_directory()
+        self.calculation_paths_file_path = FileHelper.init_calculation_directory()
         self.get_parameters_from_json()
         self.set_parameters()
         self.assign_normalisation_factor()
@@ -105,9 +106,9 @@ class MainProgram:
         """
         Gets the paths for the output files from OutputPaths.json file.
         """
-        self.correlation_function_path = FileHelper.give_output_path(self.outputfile_path, "computed_correlation")
-        self.true_correlation_function_path = FileHelper.give_output_path(self.outputfile_path, "true_correlation")
-        self.frequency_spectrum_path = FileHelper.give_output_path(self.outputfile_path, "frequency_spectrum")
+        self.correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path, "computed_correlation")
+        self.true_correlation_function_path = FileHelper.give_output_path(self.calculation_paths_file_path, "true_correlation")
+        self.frequency_spectrum_path = FileHelper.give_output_path(self.calculation_paths_file_path, "frequency_spectrum")
 
     def get_parameters_from_json(self):
         """
@@ -147,7 +148,7 @@ class MainProgram:
                                "max_frequency": self.max_frequency, "min_distance": self.min_distance,
                                "max_distance": self.max_distance}
 
-        with open(FileHelper.give_output_path(self.outputfile_path, "computed_parameters"), "w") as file:
+        with open(FileHelper.give_output_path(self.calculation_paths_file_path, "computed_parameters"), "w") as file:
             json.dump(computed_parameters, file, indent=4)
 
     def check_and_assign_spectrum_function(self, spectrum_function):
@@ -291,16 +292,21 @@ class MainProgram:
         """
         if self.is_accuracy_test:
             self.compute_true_correlation_function()
+        print("Computing frequency spectrum...")
         self.compute_frequency_spectrum()
+        print("Computing inverse Fourier Transform...")
         self.compute_inverse_fourier_transform()
+        print("Saving results...")
         self.save_results()
 
-        visualizer = Visualizer(self.outputfile_path)
+        print("Plotting results...")
+        visualizer = Visualizer(self.calculation_paths_file_path)
         if self.is_accuracy_test:
             visualizer.compare_correlation_functions()
             visualizer.plot_true_correlation_function()
         visualizer.plot_frequency_spectrum()
         visualizer.plot_computed_correlation_function()
+        print(f"Done. (results saved in {Path(self.calculation_paths_file_path).parent})")
 
 
 if __name__ == "__main__":

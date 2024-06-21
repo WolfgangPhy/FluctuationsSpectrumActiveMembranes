@@ -1,0 +1,11 @@
+{
+    "parameters": "Parameters.json",
+    "computed_parameters": "Datas\\computed_parameters.json",
+    "computed_correlation": "Datas\\computed_correlation.csv",
+    "true_correlation": "Datas\\true_correlation.csv",
+    "frequency_spectrum": "Datas\\frequency_spectrum.csv",
+    "frequency_plot": "Plots\\frequency_plot.png",
+    "correlation_plot": "Plots\\correlation_plot.png",
+    "comparison_plot": "Plots\\comparison_plot.png",
+    "true_correlation_plot": "Plots\\true_correlation_plot.png"
+}

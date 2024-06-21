@@ -12,12 +12,12 @@ class Visualizer:
     """
     Class that manages the visualization of the results of the calculations.
     """
-    def __init__(self, outputfile_path):
+    def __init__(self, calculation_paths_file_path):
         """
         Constructor of the Visualizer class.
 
         # Args:
-            outputfile_path (str): Path to the current calculation directory.
+            calculation_paths_file_path (str): Path to the current calculation directory.
         """
         self.max_distance = None
         self.min_distance = None
@@ -37,7 +37,7 @@ class Visualizer:
         self.frequency_spectrum_file = None
         self.true_correlation_function = None
         self.computed_correlation_function_file = None
-        self.outputfile_path = outputfile_path
+        self.calculation_directory_path = calculation_paths_file_path
         self.get_files_path()
         self.load_datas()
 
@@ -45,10 +45,10 @@ class Visualizer:
         """
         Retrieves the paths to the files containing the results of the calculations.
         """
-        self.computed_correlation_function_file = FileHelper.give_output_path(self.outputfile_path,
+        self.computed_correlation_function_file = FileHelper.give_output_path(self.calculation_directory_path,
                                                                               "computed_correlation")
-        self.true_correlation_function = FileHelper.give_output_path(self.outputfile_path, "true_correlation")
-        self.frequency_spectrum_file = FileHelper.give_output_path(self.outputfile_path, "frequency_spectrum")
+        self.true_correlation_function = FileHelper.give_output_path(self.calculation_directory_path, "true_correlation")
+        self.frequency_spectrum_file = FileHelper.give_output_path(self.calculation_directory_path, "frequency_spectrum")
 
     def load_datas(self):
         """
@@ -58,7 +58,7 @@ class Visualizer:
         self.true_correlation_function_df = pd.read_csv(self.true_correlation_function)
         self.frequency_spectrum = pd.read_csv(self.frequency_spectrum_file)
 
-        with open("Parameters.json") as file:
+        with open(FileHelper.give_output_path(self.calculation_directory_path,"parameters")) as file:
             parameters = json.load(file)
         self.temperature = parameters["temperature"]
         self.volumic_mass = parameters["volumic_mass"]
@@ -67,7 +67,7 @@ class Visualizer:
         self.area = parameters["area"]
         self.resolution = parameters["resolution"]
 
-        with open("ComputedParameters.json") as file:
+        with open(FileHelper.give_output_path(self.calculation_directory_path, "computed_parameters")) as file:
             computed_parameters = json.load(file)
         self.capillary_frequency = computed_parameters["capillary_frequency"]
         self.curvature_frequency = computed_parameters["curvature_frequency"]
@@ -96,7 +96,7 @@ class Visualizer:
         ax.set_xlabel("Distance (m)")
         ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
         ax.set_title("Computed Correlation Function vs. True Correlation Function 2D")
-        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "comparison_plot"))
+        plt.savefig(FileHelper.give_output_path(self.calculation_directory_path, "comparison_plot"))
 
     def plot_computed_correlation_function(self):
         """
@@ -115,7 +115,7 @@ class Visualizer:
         ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
         ax.set_title("Computed Correlation Function vs. Distance 2D")
         ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1e'))
-        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "correlation_plot"))
+        plt.savefig(FileHelper.give_output_path(self.calculation_directory_path, "correlation_plot"))
 
     def plot_true_correlation_function(self):
         """
@@ -136,7 +136,7 @@ class Visualizer:
         ax.set_ylabel("$<\zeta(0)\zeta(r_\parallel)> (m^2)$")
         ax.set_title("True Correlation Function vs. Distance 2D")
         ax.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.1e'))
-        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "true_correlation_plot"))
+        plt.savefig(FileHelper.give_output_path(self.calculation_directory_path, "true_correlation_plot"))
 
     def plot_frequency_spectrum(self):
         """
@@ -153,4 +153,4 @@ class Visualizer:
         ax.set_xlabel("Frequency (Hz)")
         ax.set_ylabel("Spectrum")
         ax.set_title("Frequency Spectrum vs. Frequency 2D")
-        plt.savefig(FileHelper.give_output_path(self.outputfile_path, "frequency_plot"))
+        plt.savefig(FileHelper.give_output_path(self.calculation_directory_path, "frequency_plot"))
